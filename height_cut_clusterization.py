@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from path_planning.Heightmap import Heightmap
 from sklearn.cluster import DBSCAN
-from utils import obstacle_height_detection, grahamscan
+from utils import obstacle_height_detection, grahamscan, visualize
 
 # Height bound to detect obstacles
-HEIGHT = 6
+HEIGHT = 10
 
 
 def main():
@@ -28,23 +28,14 @@ def main():
 		points = clusters[key]
 		boundaries_indexes = grahamscan(points)
 		bounds[key] = boundaries_indexes
-
 	polygons = {}
 	for key in clusters.keys():
-		X = []
-		Y = []
 		polygons[key] = []
 		for i in bounds[key]:
 			polygons[key].append(clusters[key][i])
-			X.append(clusters[key][i][0])
-			Y.append(clusters[key][i][1])
 
-		# For visialuzation
-		#plt.plot(X,Y, 'r')
-
-	# For visualization
-	#plt.axis([-width//2, width//2, -height//2, height//2])
-	#plt.show()
+	# Visuzlization
+	visualize(polygons, height, width)
 
 if __name__ == "__main__":
 	main()

@@ -1,7 +1,7 @@
 from path_planning.Heightmap import Heightmap
 
 # Height bound to detect obstacles
-HEIGHT = 5
+HEIGHT = 10
 
 def obstacle_height_detection(hmap, height):
 	obstacles = []

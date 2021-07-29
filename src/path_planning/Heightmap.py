@@ -15,13 +15,13 @@ class Heightmap:
 
 # Converting a grayscale image to a heightmap vertex list        
     def heightmap_builder(self):
-        print('Map height scale: ' + str(MAP_SCALE))
-        image = cv2.imread(HEIGHTMAP_PATH, 0)
+        print('Map height scale: ' + str(const.MAP_SCALE))
+        image = cv2.imread(const.HEIGHTMAP_PATH, 0)
         self.map_height = image.shape[0]
         self.map_width = image.shape[1]
-        self.x_step_size = MAP_HEIGHT / (image.shape[0] - 1)
-        self.y_step_size = MAP_WIDTH / (image.shape[1] - 1)
-        self.grid_range = ROBOT_RADIUS // self.x_step_size + 1
+        self.x_step_size = const.MAP_HEIGHT / (image.shape[0] - 1)
+        self.y_step_size = const.MAP_WIDTH / (image.shape[1] - 1)
+        self.grid_range = const.ROBOT_RADIUS // self.x_step_size + 1
         print('x_step_size: ' + str(self.x_step_size))
         print('y_step_size: ' + str(self.y_step_size))
         max_z = 0
@@ -29,9 +29,9 @@ class Heightmap:
         for i in range(image.shape[0]):  # traverses through height of the image
             self.heightmap.append([])
             for j in range(image.shape[1]):  # traverses through width of the image
-                x = -MAP_HEIGHT / 2 + j * self.x_step_size 
-                y = MAP_WIDTH / 2 - i * self.y_step_size
-                z = image[i][j] / MAP_SCALE
+                x = -const.MAP_HEIGHT / 2 + j * self.x_step_size 
+                y = const.MAP_WIDTH / 2 - i * self.y_step_size
+                z = image[i][j] / const.MAP_SCALE
                 if z > max_z:
                     max_z = z
                 if z < min_z:
