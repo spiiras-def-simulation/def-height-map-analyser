@@ -1,9 +1,36 @@
 import matplotlib.pyplot as plt
 import matplotlib
+from matplotlib.patches import Rectangle
 
 # Utils functions
 
-def visualize(polygons, height, width):
+def visualize_rectangles(clusters, rects, width, height):
+	# Plotting rectangles
+
+	# Input:
+	#		- rectangles [(xmin, ymin), width, height]
+	#		- width of hmap
+	#		- height of hmap
+	fig, ax = plt.subplots()
+
+	for key in clusters.keys():
+		X = []
+		Y = []
+		for point in clusters[key]:
+			X.append(point[0])
+			Y.append(point[1])
+		plt.plot(X,Y, 'ro')
+
+	for key in rects.keys():
+		rectangle = rects[key]
+		xmin, ymin = rectangle[0]
+		width_rect = rectangle[1]
+		height_rect = rectangle[2]
+		ax.add_patch(Rectangle((xmin, ymin), width_rect, height_rect))
+	plt.axis([-width//2 -1, width//2 +1, -height//2 -1, height//2 +1])
+	plt.show()
+
+def visualize_polygons(polygons, width, height):
 	# Plotting polygons
 
 	# Input:
@@ -22,8 +49,32 @@ def visualize(polygons, height, width):
 	plt.axis([-width//2 -1, width//2 +1, -height//2 -1, height//2 +1])
 	plt.show()
 
+def rect_corners(points):
+	# Defines corners of rectangle
+
+	# Input:
+	#		- array of points [x, y]
+	# Output:
+	#		- xmin, ymin, xmax, ymax
+
+	# xmin = float('-inf')
+	# ymin = float('+inf')
+	# xmax = float('inf')
+	# ymax = float('inf')
+	X = []
+	Y = []
+	for point in points:
+		X.append(point[0])
+		Y.append(point[1])
+	xmin = min(X) -1
+	xmax = max(X) +1
+	ymin = min(Y) -1
+	ymax = max(Y) +1
+
+	return xmin, ymin, xmax, ymax
+
 def obstacle_height_detection(hmap, height):
-	# Defines points, higher than bound
+	# Defines points, higher than height bound
 
 	# Input:
 	#		- heightmap
