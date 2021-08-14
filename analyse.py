@@ -1,11 +1,16 @@
-import matplotlib.pyplot as plt
+import sys
 import numpy as np
-from path_planning.Heightmap import Heightmap
 from sklearn.cluster import DBSCAN
+import requests
+
+from Heightmap import Heightmap
 import utils
 
-# Height bound to detect obstacles
-HEIGHT = 10
+# Map params
+MAP_PATH = sys.argv[1]
+MAP_DISTANCE = int(sys.argv[2])
+MAP_HEIGHT_SCALE = float(sys.argv[3])
+MAP_MAX_HEIGHT = int(sys.argv[4])
 
 def define_rectangles(clusters):
 	# Defines rectangles, that fit points in clusters
@@ -19,9 +24,7 @@ def define_rectangles(clusters):
 	for key in clusters.keys():
 		points = clusters[key]
 		xmin, ymin, xmax, ymax = utils.rect_corners(points)
-		width_rect = xmax - xmin
-		height_rect = ymax - ymin
-		rects[key] = [(xmin, ymin), width_rect, height_rect]
+		rects[key] = [[xmin, ymin], [[xmax, ymax]]]
 	return rects
 
 def define_polygons(clusters):
@@ -46,9 +49,9 @@ def define_polygons(clusters):
 
 def main():
 	# Data preparation
-	hm = Heightmap()
+	hm = Heightmap(MAP_PATH, MAP_DISTANCE, MAP_HEIGHT_SCALE)
 	hmap, height, width, x_step, y_step, grid_step = hm.prepare_heightmap()
-	obstacles = utils.obstacle_height_detection(hmap, HEIGHT)
+	obstacles = utils.obstacle_height_detection(hmap, MAP_MAX_HEIGHT)
 
 	# Clustering
 	clustering = DBSCAN(eps=3, min_samples=1).fit(np.array(obstacles))
@@ -60,11 +63,14 @@ def main():
 
 	# Define and visualize rectangles
 	rects = define_rectangles(clusters)
-	utils.visualize_rectangles(clusters, rects, width, height)
+	print(rects)
 
-	# # Define and visualize polygons
-	# polygons = define_polygons(clusters)
-	# utils.visualize_polygons(polygons, width, height)
+	# Request send produced rectangles
+	result = requests.post('localhost:5252/areas', data = {'areas': rects})
+	if result.status_code == 200:
+		print('Add areas to system')
+	else:
+		print('Problem with adding areas to sustem with code ', result.status_code)
 
 if __name__ == "__main__":
 	main()
