@@ -42,7 +42,10 @@ class Heightmap:
                 p.set_id(p_id)
                 p.set_neighbors_list()
                 self.heightmap[i].append(p)
+        self.min_z = min_z
+        self.max_z = max_z
         print('min_z: ' + str(min_z) + '\nmax_z: ' + str(max_z))
+
 
 # Converting heightmap vertex dictionary to list
 # Input
@@ -79,7 +82,7 @@ class Heightmap:
     def prepare_heightmap(self):
         self.heightmap_builder()
         hmap = self.convert_to_dict(self.heightmap)
-        return hmap, self.map_height, self.map_width, self.x_step_size, self.y_step_size, self.grid_range
+        return hmap, self.map_height, self.map_width, self.x_step_size, self.y_step_size, self.min_z, self.max_z, self.grid_range
 
 # Finding a Key in a Dictionary by Value
 def get_key(d, value):
