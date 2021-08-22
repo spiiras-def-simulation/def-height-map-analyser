@@ -10,8 +10,9 @@ import utils
 # Map params
 MAP_PATH = sys.argv[1]
 MAP_DISTANCE = float(sys.argv[2])
-MAP_HEIGHT_SCALE = float(sys.argv[3])
-MAP_MAX_HEIGHT = float(sys.argv[4])
+MAP_MIN_ELIVATION = float(sys.argv[3])
+MAP_MAX_ELIVATION = float(sys.argv[4])
+UAV_MAX_ELIVATION = float(sys.argv[5])
 
 def define_rectangles(clusters):
 	# Defines rectangles, that fit points in clusters
@@ -25,18 +26,18 @@ def define_rectangles(clusters):
 	for key in clusters.keys():
 		points = clusters[key]
 		xmin, ymin, xmax, ymax = utils.rect_corners(points)
-		rects[int(key)] = [[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax], [xmin, ymin]]
+		rects[int(key)] = [[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]]
 	return rects
 
 def main():
 	# Data preparation
-	hm = Heightmap(MAP_PATH, MAP_DISTANCE, MAP_HEIGHT_SCALE)
-	hmap, height, width, x_step, y_step, min_z, max_z, grid_step = hm.prepare_heightmap()
-	obstacles = utils.obstacle_height_detection(hmap, MAP_MAX_HEIGHT)
+	hm = Heightmap(MAP_PATH, MAP_DISTANCE, MAP_MIN_ELIVATION, MAP_MAX_ELIVATION)
+	hmap, height, width, x_step, y_step, map_min_elivation, map_max_elivation = hm.prepare_heightmap()
+	obstacles = utils.obstacle_height_detection(hmap, UAV_MAX_ELIVATION)
 
 	# Clustering
 	clusters = dict()
-	if MAP_MAX_HEIGHT < max_z:
+	if UAV_MAX_ELIVATION < map_max_elivation:
 			clustering = DBSCAN(eps=3, min_samples=1).fit(np.array(obstacles))
 			for i in clustering.labels_:
 				clusters[i] = []
